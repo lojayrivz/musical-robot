@@ -345,6 +345,13 @@ function even(total, members){
 const items = [
   // DAY 0 — SG LAYOVER
   {day:'Day 0 · SG Layover', date:'Jun 3', title:'Silom Cooking Class', currency:'PHP', total:19240, paidBy:'Christel', shares:even(19240,M), paid:['Louie','Christel','Cecille','Lawrence','Althea','Art'], tags:['pending'], note:'Kriselle & Joshua haven\u2019t settled their 2,405 yet'},
+  {day:'Day 0 · SG Layover', date:'Jun 3', title:'Ya Kun Kaya Toast', currency:'PHP', total:318.42, paidBy:'Kriselle', shares:{Art:106.14, Althea:106.14, Kriselle:106.14}},
+  {day:'Day 0 · SG Layover', date:'Jun 3', title:'7-Eleven (3 water bottles)', currency:'PHP', total:500.36, paidBy:'Kriselle', shares:{Art:166.79, Althea:166.79, Kriselle:166.79}},
+  {day:'Day 0 · SG Layover', date:'Jun 3', title:'GBTB — Satay', currency:'PHP', total:454.88, paidBy:'Kriselle', shares:{Art:151.63, Althea:151.63, Kriselle:151.63}},
+  {day:'Day 0 · SG Layover', date:'Jun 3', title:'GBTB — Salted Egg Squid', currency:'PHP', total:1061.38, paidBy:'Kriselle', shares:{Art:353.79, Althea:353.79, Kriselle:353.79}},
+  {day:'Day 0 · SG Layover', date:'Jun 3', title:'GBTB — Rice (x2)', currency:'PHP', total:1010.84, paidBy:'Kriselle', shares:{Art:336.95, Althea:336.95, Kriselle:336.95}},
+  {day:'Day 0 · SG Layover', date:'Jun 3', title:'GBTB — Dumplings', currency:'PHP', total:1000.73, paidBy:'Kriselle', shares:{Art:333.58, Althea:333.58, Kriselle:333.58}},
+  {day:'Day 0 · SG Layover', date:'Jun 3', title:'GBTB — McDonalds Ice Cream', currency:'PHP', total:311.84, paidBy:'Kriselle', shares:{Art:103.95, Althea:103.95, Kriselle:103.95}},
   {day:'Day 0 · SG Layover', date:'Jun 3', title:'Van Transfer to Stay', currency:'PHP', total:2038.40, paidBy:'Louie', shares:even(2038.40,M), paid:['Althea']},
   {day:'Day 0 · SG Layover', date:'Jun 3', title:'Luggage Storage', currency:'PHP', total:4919.36, paidBy:'Louie',
     shares:{Art:1355.33, Althea:803.16, Christel:552.17, Cecille:552.17, Lawrence:552.17, Kriselle:552.17, Louie:552.17},
@@ -362,8 +369,8 @@ const items = [
   {day:'Day 1 · Cooking Class / Mall', date:'Jun 4', title:'Grab — Cooking School → Pier', currency:'PHP', total:155.01, paidBy:'Louie', shares:even(155.01,['Christel','Cecille','Lawrence','Louie'])},
   {day:'Day 1 · Cooking Class / Mall', date:'Jun 4', title:'Grab — Cooking School → Pier (Art\u2019s side)', currency:'PHP', total:157.26, paidBy:'Art', shares:even(157.26,['Althea','Art','Joshua','Kriselle'])},
   {day:'Day 1 · Cooking Class / Mall', date:'Jun 4', title:'Ferry to Iconsiam', currency:'PHP', total:182.36, paidBy:'Althea', shares:even(182.36,M), settled:['Christel','Louie'], tags:['settled'], note:'฿96 total · Christel & Louie already squared up with Althea'},
-  {day:'Day 1 · Cooking Class / Mall', date:'Jun 4', title:'Iconsiam — Pancake', currency:'THB', total:60, paidBy:'Kriselle', shares:even(60,M)},
-  {day:'Day 1 · Cooking Class / Mall', date:'Jun 4', title:'Iconsiam — Dimsum', currency:'THB', total:280, paidBy:'Kriselle', shares:even(280,M)},
+  {day:'Day 1 · Cooking Class / Mall', date:'Jun 4', title:'Iconsiam — Pancake', currency:'THB', total:60, paidBy:'Kriselle', shares:even(60,M), paid:M.filter(m=>m!=='Kriselle'), note:'Free! Kriselle covered this for everyone 🎉'},
+  {day:'Day 1 · Cooking Class / Mall', date:'Jun 4', title:'Iconsiam — Dimsum', currency:'PHP', total:531.89, paidBy:'Kriselle', shares:even(531.89,M), note:'฿280 total'},
   {day:'Day 1 · Cooking Class / Mall', date:'Jun 4', title:'Ferry from Iconsiam', currency:'PHP', total:182.36, paidBy:'Althea', shares:even(182.36,M), settled:['Christel','Louie'], tags:['settled'], note:'฿96 total · Christel & Louie already squared up with Althea'},
   {day:'Day 1 · Cooking Class / Mall', date:'Jun 4', title:'Train to Siam', currency:'PHP', total:151.97, paidBy:'Louie', shares:even(151.97,['Christel','Louie'])},
   {day:'Day 1 · Cooking Class / Mall', date:'Jun 4', title:'Wingstop', currency:'PHP', total:3778.35, paidBy:'Althea', shares:even(3778.35,M), paid:['Louie','Christel'], note:'฿1,989 total'},
@@ -394,7 +401,7 @@ const items = [
   {day:'Day 2 · Temple Day', date:'Jun 5', title:'Crispy Pancake', currency:'PHP', total:75.98, paidBy:'Althea', shares:even(75.98,['Althea','Art','Joshua','Kriselle']), note:'฿40 total'},
   {day:'Day 2 · Temple Day', date:'Jun 5', title:'Crispy Pork, Chinatown', currency:'PHP', total:873.83, paidBy:'Joshua', shares:even(873.83,M.filter(m=>m!=='Louie')), note:'฿460 total'},
   {day:'Day 2 · Temple Day', date:'Jun 5', title:'Sugarcane Drink', currency:'PHP', total:94.98, paidBy:'Althea', shares:even(94.98,['Althea','Art']), note:'฿50 total'},
-  {day:'Day 2 · Temple Day', date:'Jun 5', title:'Train to Asok (Terminal 21)', currency:'THB', total:256, paidBy:'Kriselle', shares:even(256,M)},
+  {day:'Day 2 · Temple Day', date:'Jun 5', title:'Train to Asok (Terminal 21)', currency:'PHP', total:486.40, paidBy:'Kriselle', shares:even(486.40,M), note:'฿256 total'},
   {day:'Day 2 · Temple Day', date:'Jun 5', title:'Grab — Terminal 21 → Stay', currency:'PHP', total:303.15, paidBy:'Louie', shares:even(303.15,['Christel','Cecille','Lawrence','Louie'])},
   {day:'Day 2 · Temple Day', date:'Jun 5', title:'Grab — Terminal 21 → Stay (Art\u2019s side)', currency:'PHP', total:272.60, paidBy:'Art', shares:even(272.60,['Althea','Art','Joshua','Kriselle'])},
   {day:'Day 2 · Temple Day', date:'Jun 5', title:'Omelette Rice Dinner', currency:'PHP', total:1292.80, paidBy:'Louie',
@@ -405,7 +412,7 @@ const items = [
   // DAY 3 — PATTAYA
   {day:'Day 3 · Pattaya', date:'Jun 6', title:'Van Rental — Pattaya', currency:'PHP', total:7598.50, paidBy:'Louie', shares:even(7598.50,M), paid:['Althea'], note:'฿4,000 total'},
   {day:'Day 3 · Pattaya', date:'Jun 6', title:'Nong Nooch Garden — Admission', currency:'PHP', total:6800, paidBy:'Louie', shares:even(6800,M), paid:['Althea']},
-  {day:'Day 3 · Pattaya', date:'Jun 6', title:'Lunch — Mae Pong Sri', currency:'THB', total:1313, paidBy:'Kriselle', shares:even(1313,['Althea','Art','Joshua','Kriselle'])},
+  {day:'Day 3 · Pattaya', date:'Jun 6', title:'Lunch — Mae Pong Sri', currency:'PHP', total:2522.43, paidBy:'Kriselle', shares:even(2522.43,['Althea','Art','Joshua','Kriselle']), note:'฿1,313 total'},
   {day:'Day 3 · Pattaya', date:'Jun 6', title:'Sanctuary of Truth', currency:'PHP', total:6078.80, paidBy:'Louie', shares:even(6078.80,M), paid:['Althea'], note:'฿3,200 cash'},
   {day:'Day 3 · Pattaya', date:'Jun 6', title:'Baby Octopus', currency:'PHP', total:379.92, paidBy:'Althea', shares:even(379.92,M), paid:['Louie','Christel'], note:'฿200 total'},
   {day:'Day 3 · Pattaya', date:'Jun 6', title:'Haroy Chicken Wrap', currency:'PHP', total:169.07, paidBy:'Althea', shares:even(169.07,['Althea','Art']), note:'฿89 total'},
@@ -415,7 +422,7 @@ const items = [
   {day:'Day 3 · Pattaya', date:'Jun 6', title:'Tuktuk to MBK (BKK group)', currency:'PHP', total:189.96, paidBy:'Louie', shares:even(189.96,['Christel','Cecille','Lawrence','Louie'])},
   {day:'Day 3 · Pattaya', date:'Jun 6', title:'Grab — MBK → Stay', currency:'PHP', total:523.67, paidBy:'Louie', shares:even(523.67,['Christel','Cecille','Lawrence','Louie'])},
   {day:'Day 3 · Pattaya', date:'Jun 6', title:'Grab — MBK → Stay (Art\u2019s side)', currency:'PHP', total:518.12, paidBy:'Art', shares:even(518.12,['Althea','Art','Joshua','Kriselle'])},
-  {day:'Day 3 · Pattaya', date:'Jun 6', title:'7-Eleven Chang Beer', currency:'THB', total:1104.64, paidBy:'Kriselle', shares:even(1104.64,['Art','Joshua','Kriselle','Lawrence','Louie'])},
+  {day:'Day 3 · Pattaya', date:'Jun 6', title:'7-Eleven Chang Beer', currency:'PHP', total:575, paidBy:'Kriselle', shares:even(575,['Art','Joshua','Kriselle','Lawrence','Louie']), note:'฿1,104.64 total · Kriselle deducted her personal items, resulting in ₱575 shared split'},
 
   // DAY 4 — FREE DAY
   {day:'Day 4 · Free Day', date:'Jun 7', title:'Grab — Stay → Platinum Mall', currency:'PHP', total:352.39, paidBy:'Louie', shares:even(352.39,['Christel','Cecille','Lawrence','Louie'])},
