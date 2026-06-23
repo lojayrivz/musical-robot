@@ -344,7 +344,7 @@ function even(total, members){
 
 const items = [
   // DAY 0 — SG LAYOVER
-  {day:'Day 0 · SG Layover', date:'Jun 3', title:'Silom Cooking Class', currency:'PHP', total:19240, paidBy:'Christel', shares:even(19240,M), paid:['Louie','Christel','Cecille','Lawrence','Althea','Art'], tags:['pending'], note:'Kriselle & Joshua haven\u2019t settled their 2,405 yet'},
+  {day:'Day 0 · SG Layover', date:'Jun 3', title:'Silom Cooking Class', currency:'PHP', total:19240, paidBy:'Christel', shares:even(19240,M), paid:['Louie','Christel','Cecille','Lawrence','Althea','Art','Joshua'], tags:['pending'], note:'Kriselle hasn\u2019t settled their ₱2,405 yet'},
   {day:'Day 0 · SG Layover', date:'Jun 3', title:'Ya Kun Kaya Toast', currency:'PHP', total:318.42, paidBy:'Kriselle', shares:{Art:106.14, Althea:106.14, Kriselle:106.14}},
   {day:'Day 0 · SG Layover', date:'Jun 3', title:'7-Eleven (3 water bottles)', currency:'PHP', total:500.36, paidBy:'Kriselle', shares:{Art:166.79, Althea:166.79, Kriselle:166.79}},
   {day:'Day 0 · SG Layover', date:'Jun 3', title:'GBTB — Satay', currency:'PHP', total:454.88, paidBy:'Kriselle', shares:{Art:151.63, Althea:151.63, Kriselle:151.63}},
@@ -443,7 +443,23 @@ const items = [
 // ---------- global settled relationships ----------
 // These mean: <debtor> has fully settled everything they owed <creditor>.
 const settledPairs = [
-  // Althea's settlement with Louie is now tracked per-item via paid:[...] arrays below
+  // Louie
+  ['Louie','Cecille'],
+  // Christel
+  ['Christel','Louie'], ['Christel','Cecille'], ['Christel','Kriselle'], ['Christel','Art'], ['Christel','Joshua'],
+  // Cecille
+  ['Cecille','Louie'], ['Cecille','Althea'], ['Cecille','Art'], ['Cecille','Kriselle'],
+  ['Cecille','Joshua'],
+  // Lawrence
+  ['Lawrence','Louie'], ['Lawrence','Althea'], ['Lawrence','Cecille'], ['Lawrence','Kriselle'], ['Lawrence','Art'],
+  ['Lawrence','Joshua'],
+  // Althea
+  ['Althea','Kriselle'], ['Althea','Art'], ['Althea','Cecille'], ['Althea','Joshua'],
+  // Art
+  ['Art','Cecille'], ['Art','Althea'],
+  ['Art','Joshua'],
+  // Joshua
+  ['Joshua','Louie'], ['Joshua','Christel'], ['Joshua','Art'], ['Joshua','Kriselle'], ['Joshua','Althea'], ['Joshua','Cecille'],
 ];
 function isPairSettled(debtor, creditor){
   return settledPairs.some(([d,c]) => d===debtor && c===creditor);
@@ -516,29 +532,32 @@ M.forEach(person=>{
     if(c.THB){ rows += `<div class="owe-row"><span>→ ${creditor} (THB)</span><b>฿${c.THB.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}</b></div>`; totalTHB += c.THB; }
   });
   if(person==='Louie'){
-    // What others owe Louie (outstanding)
+    // What others owe Louie (outstanding + settled with paid stamp)
     let owedRows = '';
     let owedPHP=0, owedTHB=0;
     M.filter(m=>m!=='Louie').forEach(debtor=>{
-      const d = balances[debtor]['Louie'];
-      if(!d) return;
-      if(d.PHP){ owedRows += `<div class="owe-row"><span>${debtor} owes me (PHP)</span><b style="color:var(--green)">+₱${d.PHP.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}</b></div>`; owedPHP += d.PHP; }
-      if(d.THB){ owedRows += `<div class="owe-row"><span>${debtor} owes me (THB)</span><b style="color:var(--green)">+฿${d.THB.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}</b></div>`; owedTHB += d.THB; }
-    });
-    // Debtors who are fully paid up (gross total of paid items, for display only)
-    let paidRows = '';
-    M.filter(m=>m!=='Louie').forEach(debtor=>{
-      let pPHP=0, pTHB=0;
+      let outPHP=0, outTHB=0, paidPHP=0, paidTHB=0;
       items.forEach(it=>{
         if(it.paidBy!=='Louie' || !it.shares) return;
         const amt = it.shares[debtor];
         if(amt===undefined) return;
-        if(!(it.paid && it.paid.includes(debtor))) return;
-        if(it.currency==='PHP') pPHP+=amt; else pTHB+=amt;
+        if(it.settled && it.settled.includes(debtor)) return;
+        const perItemPaid = it.paid && it.paid.includes(debtor);
+        const globalPaid = isPairSettled(debtor, 'Louie');
+        if(perItemPaid || globalPaid){
+          if(it.currency==='PHP') paidPHP+=amt; else paidTHB+=amt;
+        } else {
+          if(it.currency==='PHP') outPHP+=amt; else outTHB+=amt;
+        }
       });
-      if(pPHP>0.01 || pTHB>0.01){
-        const label = [pPHP?`₱${pPHP.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}`:null, pTHB?`฿${pTHB.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}`:null].filter(Boolean).join(' + ');
-        paidRows += `<div class="owe-row"><span>${debtor} owed me</span><b style="color:var(--green)">${label}<span class="paid-stamp">paid</span></b></div>`;
+      if(outPHP>0.01 || outTHB>0.01){
+        const label = [outPHP?`₱${outPHP.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}`:null, outTHB?`฿${outTHB.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}`:null].filter(Boolean).join(' + ');
+        owedRows += `<div class="owe-row"><span>${debtor} owes me</span><b style="color:var(--green)">+${label}</b></div>`;
+        owedPHP += outPHP; owedTHB += outTHB;
+      }
+      if(paidPHP>0.01 || paidTHB>0.01){
+        const label = [paidPHP?`₱${paidPHP.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}`:null, paidTHB?`฿${paidTHB.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}`:null].filter(Boolean).join(' + ');
+        owedRows += `<div class="owe-row"><span>${debtor} owed me</span><b style="color:var(--green)">${label}<span class="paid-stamp">paid</span></b></div>`;
       }
     });
     // What Louie owes others
@@ -556,7 +575,10 @@ M.forEach(person=>{
         if(it.paidBy!==creditor || !it.shares) return;
         const amt = it.shares['Louie'];
         if(amt===undefined) return;
-        if(!(it.paid && it.paid.includes('Louie'))) return;
+        // count if per-item paid OR globally settled pair
+        const perItemPaid = it.paid && it.paid.includes('Louie');
+        const globalPaid = isPairSettled('Louie', creditor);
+        if(!perItemPaid && !globalPaid) return;
         if(it.currency==='PHP') pPHP+=amt; else pTHB+=amt;
       });
       if(pPHP>0.01 || pTHB>0.01){
@@ -569,7 +591,6 @@ M.forEach(person=>{
       <div class="person-head"><span>${person}</span><span class="person-total" style="color:var(--green)">collects ₱${owedPHP.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}</span></div>
       ${divider}Collecting from others</div>
       ${owedRows}
-      ${paidRows}
       ${iOweRows || iPaidRows ? `${divider}I owe back</div>${iOweRows}${iPaidRows}` : ''}
       <div style="border-top:2px solid var(--ink);margin-top:8px;padding-top:6px;display:flex;justify-content:space-between;font-size:12px;font-weight:700;">
         <span>Net (PHP)</span><span style="color:var(--green)">₱${(owedPHP - iOwePHP).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}</span>
@@ -589,7 +610,9 @@ M.forEach(person=>{
         if(it.paidBy!==creditor || !it.shares) return;
         const amt = it.shares[debtorPerson];
         if(amt===undefined) return;
-        if(!(it.paid && it.paid.includes(debtorPerson))) return;
+        const perItemPaid = it.paid && it.paid.includes(debtorPerson);
+        const globalPaid = isPairSettled(debtorPerson, creditor);
+        if(!perItemPaid && !globalPaid) return;
         if(it.currency==='PHP') pPHP+=amt; else pTHB+=amt;
       });
       if(pPHP>0.01 || pTHB>0.01){
@@ -602,17 +625,64 @@ M.forEach(person=>{
 
   if(rows===''){
     const paidHist = paidHistoryRows(person);
-    sHTML += `<div class="person-card"><div class="person-head"><span>${person}</span></div>${paidHist?`<div style="border-top:1px dashed var(--line);margin:8px 0 6px;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);padding-top:6px;">I owe</div>${paidHist}`:''}<div class="all-clear">all clear</div></div>`;
+    // still compute collectRows for all-clear case
+    let collectRowsAC = '';
+    M.filter(m=>m!==person).forEach(debtor=>{
+      let outPHP=0,outTHB=0,paidPHP=0,paidTHB=0;
+      items.forEach(it=>{
+        if(it.paidBy!==person||!it.shares) return;
+        const amt=it.shares[debtor]; if(amt===undefined) return;
+        if(it.settled&&it.settled.includes(debtor)) return;
+        const pp=it.paid&&it.paid.includes(debtor), gp=isPairSettled(debtor,person);
+        if(pp||gp){ if(it.currency==='PHP') paidPHP+=amt; else paidTHB+=amt; }
+        else { if(it.currency==='PHP') outPHP+=amt; else outTHB+=amt; }
+      });
+      if(outPHP>0.01||outTHB>0.01){
+        const label=[outPHP?`₱${outPHP.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}`:null,outTHB?`฿${outTHB.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}`:null].filter(Boolean).join(' + ');
+        collectRowsAC+=`<div class="owe-row"><span>${debtor} owes me</span><b style="color:var(--green)">+${label}</b></div>`;
+      }
+      if(paidPHP>0.01||paidTHB>0.01){
+        const label=[paidPHP?`₱${paidPHP.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}`:null,paidTHB?`฿${paidTHB.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}`:null].filter(Boolean).join(' + ');
+        collectRowsAC+=`<div class="owe-row"><span>${debtor} owed me</span><b style="color:var(--green)">${label}<span class="paid-stamp">paid</span></b></div>`;
+      }
+    });
+    const divAC = (label) => `<div style="border-top:1px dashed var(--line);margin:8px 0 6px;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);padding-top:6px;">${label}</div>`;
+    sHTML += `<div class="person-card">
+      <div class="person-head"><span>${person}</span></div>
+      ${paidHist?divAC('I owe')+paidHist:''}
+      ${collectRowsAC?divAC('Collecting from others')+collectRowsAC:''}
+      <div class="all-clear">all clear</div>
+    </div>`;
     return;
   }
-  // Also check if this person is owed anything by others
+  // Collecting from others — show both outstanding AND settled (with paid stamp)
   let collectRows = '';
   let collectPHP=0, collectTHB=0;
   M.filter(m=>m!==person).forEach(debtor=>{
-    const d = (balances[debtor]||{})[person];
-    if(!d) return;
-    if(d.PHP){ collectRows += `<div class="owe-row"><span>${debtor} owes me (PHP)</span><b style="color:var(--green)">+₱${d.PHP.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}</b></div>`; collectPHP += d.PHP; }
-    if(d.THB){ collectRows += `<div class="owe-row"><span>${debtor} owes me (THB)</span><b style="color:var(--green)">+฿${d.THB.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}</b></div>`; collectTHB += d.THB; }
+    let outPHP=0, outTHB=0, paidPHP=0, paidTHB=0;
+    items.forEach(it=>{
+      if(it.paidBy!==person || !it.shares) return;
+      const amt = it.shares[debtor];
+      if(amt===undefined) return;
+      if(debtor===person) return;
+      if(it.settled && it.settled.includes(debtor)) return;
+      const perItemPaid = it.paid && it.paid.includes(debtor);
+      const globalPaid = isPairSettled(debtor, person);
+      if(perItemPaid || globalPaid){
+        if(it.currency==='PHP') paidPHP+=amt; else paidTHB+=amt;
+      } else {
+        if(it.currency==='PHP') outPHP+=amt; else outTHB+=amt;
+      }
+    });
+    if(outPHP>0.01 || outTHB>0.01){
+      const label = [outPHP?`₱${outPHP.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}`:null, outTHB?`฿${outTHB.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}`:null].filter(Boolean).join(' + ');
+      collectRows += `<div class="owe-row"><span>${debtor} owes me</span><b style="color:var(--green)">+${label}</b></div>`;
+      collectPHP += outPHP; collectTHB += outTHB;
+    }
+    if(paidPHP>0.01 || paidTHB>0.01){
+      const label = [paidPHP?`₱${paidPHP.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}`:null, paidTHB?`฿${paidTHB.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}`:null].filter(Boolean).join(' + ');
+      collectRows += `<div class="owe-row"><span>${debtor} owed me</span><b style="color:var(--green)">${label}<span class="paid-stamp">paid</span></b></div>`;
+    }
   });
   const divider2 = (label) => `<div style="border-top:1px dashed var(--line);margin:8px 0 6px;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);padding-top:6px;">${label}</div>`;
   const paidHist = paidHistoryRows(person);
@@ -647,7 +717,8 @@ M.forEach(person=>{
     if(person===it.paidBy) return;
     if(it.settled && it.settled.includes(person)) return;
     byCreditor[it.paidBy] = byCreditor[it.paidBy] || [];
-    byCreditor[it.paidBy].push({title:it.title, amt, currency:it.currency, isPaid: !!(it.paid && it.paid.includes(person))});
+    const isPaid = !!(it.paid && it.paid.includes(person)) || isPairSettled(person, it.paidBy);
+    byCreditor[it.paidBy].push({title:it.title, amt, currency:it.currency, isPaid});
   });
 
   const creditors = Object.keys(byCreditor);
@@ -697,17 +768,24 @@ document.getElementById('notes').innerHTML = `
   <div class="note-block">
     <div class="h">Other open items</div>
     <ul>
-      <li><b>Silom Cooking Class (₱19,240, paid by Christel)</b> — Kriselle & Joshua still owe Christel ₱2,405 each directly.</li>
+      <li><b>Silom Cooking Class (₱19,240, paid by Christel)</b> — Joshua has settled ₱2,405 with Christel. <b>Kriselle still owes Christel ₱2,405.</b></li>
     </ul>
   </div>
   <div class="note-block ok">
     <div class="h">Already settled — for reference</div>
     <ul>
-      <li><b>SG Cash Disbursement (₱66,440)</b> — Christel converted cash for everyone; all 7 already paid her back (₱8,305 each).</li>
-      <li><b>Ferry to/from Iconsiam</b> — Christel & Louie already reimbursed Althea their ฿12 each per trip.</li>
-      <li><b>Althea ↔ Louie</b> — fully settled both ways. Every item Louie covered for Althea (Van Transfer, Luggage Storage, 7-Eleven Water Run, Grab Pad Kra Pao, Rung Reuang Noodles, Omelette Rice Dinner, Van Rental, Nong Nooch, Sanctuary of Truth, Jeh O Chula, Platinum Mall Disbursement, Check-in Chicken, Scoot Baggage) is marked [paid] in the Breakdown tab. Whatever Louie owed Althea back (Wingstop, 7-Eleven Drinks & Water, Baby Octopus) is also marked [paid].</li>
-      <li><b>Christel → Althea</b> — fully settled. Christel has paid Althea back for Wingstop, 7-Eleven Drinks & Water, and Baby Octopus.</li>
-      <li>Personal SG snacks (Ya Kun, GBTB, 7-Eleven water bottles) — excluded, treated as individual spend.</li>
+      <li><b>SG Cash Disbursement (₱66,440)</b> — Christel converted cash; all 7 paid her back (₱8,305 each).</li>
+      <li><b>Ferry to/from Iconsiam</b> — Christel & Louie reimbursed Althea their share.</li>
+      <li><b>Althea ↔ Louie</b> — fully settled both ways (per-item [paid] stamps in Breakdown).</li>
+      <li><b>Christel → Althea</b> — settled (Wingstop, 7-Eleven Drinks & Water, Baby Octopus).</li>
+      <li><b>Louie → Cecille</b> — settled in full.</li>
+      <li><b>Christel → Louie, Cecille, Kriselle, Art, Joshua</b> — settled in full.</li>
+      <li><b>Cecille → Louie, Althea, Art, Kriselle, Joshua</b> — settled in full.</li>
+      <li><b>Lawrence → Louie, Althea, Cecille, Kriselle, Art, Joshua</b> — settled in full.</li>
+      <li><b>Althea → Kriselle, Art, Cecille, Joshua</b> — settled in full.</li>
+      <li><b>Art → Cecille, Althea, Joshua</b> — settled in full.</li>
+      <li><b>Joshua → Louie, Christel, Art, Kriselle, Althea, Cecille</b> — settled in full.</li>
+      <li>Personal SG snacks (GBTB, Ya Kun, 7-Eleven water) — now added for record keeping.</li>
     </ul>
   </div>
 `;
